@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- CDN example (jsDelivr) -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/pt-br.js"></script>
+
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div id="app">
+      <form onsubmit="salvarAtividade(event)">
+        <div id="place" class="card-bg">
+          <i class="bi bi-geo-alt icon"></i>
+          Florianólpolis, SC
+        </div>
+
+        <div class="fields">
+          <div class="field-wrapper">
+            <i class="bi bi-tag icon"></i>
+            <input
+              type="text"
+              placeholder="Qual a atividade?"
+              name="atividade"
+              required
+            />
+          </div>
+
+          <div class="field-wrapper">
+            <i class="bi bi-calendar4 icon"></i>
+            <select name="dia">
+              <option value="2024-03-01">01 de março</option>
+            </select>
+          </div>
+
+          <div class="field-wrapper">
+            <i class="bi bi-clock icon"></i>
+            <select name="hora">
+              <option value="10:30">10:30</option>
+            </select>
+          </div>
+        </div>
+
+        <button>Salvar atividade</button>
+      </form>
+
+      <main>
+        <h1>Atividades</h1>
+
+        <section></section>
+      </main>
+    </div>
+
+    <script>
+      dayjs.locale("pt-br");
+
+      const formatador = (data) => {
+        return {
+          dia: {
+            numerico: dayjs(data).format("DD"),
+            semana: {
+              curto: dayjs(data).format("ddd"),
+              longo: dayjs(data).format("dddd"),
+            },
+          },
+          mes: dayjs(data).format("MMMM"),
+          hora: dayjs(data).format("HH:mm"),
+        };
+      };
+
+      const atividade = {
+        nome: "Almoço",
+        data: dayjs("2024-07-08 10:00").toDate(),
+        finalizada: false,
+      };
+
+      let atividades = [
+        atividade,
+        {
+          nome: "Academia em grupo",
+          data: dayjs("2024-07-09 16:00").toDate(),
+          finalizada: false,
+        },
+        {
+          nome: "Gamming session",
+          data: dayjs("2024-07-09 12:00").toDate(),
+          finalizada: false,
+        },
+      ];
+
+      const criarItemDeAtividade = (atividade) => {
+        let input = `
+        <input
+        onchange="concluirAtividade(event)"
+        value="${atividade.data}"
+        type="checkbox"
+        `;
+
+        if (atividade.finalizada) {
+          input += " checked";
+        }
+
+        input += ">";
+
+        const formatar = formatador(atividade.data);
+
+        return `
+          <div class="card-bg">
+              ${input}
+
+            <div>
+                <i class="bi bi-check-circle icon-active active"></i>
+
+                <i class="bi bi-circle icon-inactive inactive"></i>
+                <span>${atividade.nome}</span>
+            </div>
+
+            <time class="short">
+                ${formatar.dia.semana.curto}.
+                ${formatar.dia.numerico} <br>
+                ${formatar.hora}
+            </time>
+              
+              <time class="full">
+                ${formatar.dia.semana.longo},
+                dia ${formatar.dia.numerico}
+                de ${formatar.mes}
+                às ${formatar.hora}h
+              </time>
+          </div>
+        `;
+      };
+
+      const atualizarListaDeAtividades = () => {
+        const section = document.querySelector("section");
+        section.innerHTML = ""; // Limpar a seção antes de adicionar novos itens
+
+        // Verifica se a lista está vazia
+        if (atividades.length === 0) {
+          section.innerHTML = `<p>Nenhuma atividade cadastrada.</p>`;
+          return;
+        }
+
+        for (let atividade of atividades) {
+          section.innerHTML += criarItemDeAtividade(atividade);
+        }
+      };
+      atualizarListaDeAtividades();
+
+      const salvarAtividade = (event) => {
+        event.preventDefault();
+        const dadosDoFormulario = new FormData(event.target);
+
+        const nome = dadosDoFormulario.get("atividade");
+        const dia = dadosDoFormulario.get("dia");
+        const hora = dadosDoFormulario.get("hora");
+        const data = dayjs(`${dia}T${hora}`).toDate();
+
+        const novaAtividade = {
+          nome,
+          data,
+          finalizada: false,
+        };
+
+        const atividadeExiste = atividades.find((atividade) => {
+          return dayjs(atividade.data).isSame(novaAtividade.data);
+        });
+
+        if (atividadeExiste) {
+          return alert("Dia/Hora não disponível");
+        }
+
+        atividades = [novaAtividade, ...atividades];
+        atualizarListaDeAtividades();
+      };
+
+      const criarDiasSelecao = () => {
+        const dias = [
+          "2024-02-28",
+          "2024-02-29",
+          "2024-03-01",
+          "2024-03-02",
+          "2024-03-03",
+        ];
+
+        let diasSelecao = "";
+
+        for (let dia of dias) {
+          const formatar = formatador(dia);
+          const diaFormatado = `${formatar.dia.numerico} de ${formatar.mes}`;
+
+          diasSelecao += `<option value="${dia}">${diaFormatado}</option>`;
+        }
+
+        document.querySelector('select[name="dia"]').innerHTML = diasSelecao;
+      };
+      criarDiasSelecao();
+
+      const criarHorasSelecao = () => {
+        let horasDisponiveis = "";
+
+        for (let i = 6; i < 23; i++) {
+          const hora = String(i).padStart(2, "0");
+          horasDisponiveis += `<option value="${hora}:00">${hora}:00</option>`;
+          horasDisponiveis += `<option value="${hora}:30">${hora}:30</option>`;
+        }
+
+        document.querySelector('select[name="hora"]').innerHTML =
+          horasDisponiveis;
+      };
+      criarHorasSelecao();
+
+      const concluirAtividade = (event) => {
+        const input = event.target;
+        const dataDesteInput = input.value;
+
+        const atividade = atividades.find((atividade) => {
+          return atividade.data == dataDesteInput;
+        });
+
+        if (!atividade) {
+          return;
+        }
+
+        atividade.finalizada = !atividade.finalizada;
+      };
+    </script>
+  </body>
+</html>
