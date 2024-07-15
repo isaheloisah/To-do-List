@@ -2,14 +2,22 @@
 
 Este projeto foi desenvolvido durante a maratona de programação NLW Journey da Rocketseat. É uma aplicação web simples e eficaz que permite aos usuários gerenciar suas tarefas diárias de forma prática e intuitiva.
 
-<h1>Tecnologias Utilizadas</h1>
+## Screenshots
+
+Aqui estão algumas capturas de tela do projeto:
+
+![image](https://github.com/user-attachments/assets/0cccc9fe-389c-4ff0-b034-fff2480670f5)
+![image](https://github.com/user-attachments/assets/06bcc7a3-4fc7-49da-b6c2-90ede5edce52)
+
+
+## Tecnologias Utilizadas
 <ul>
   <li>HTML5</li>
   <li>CSS3</li>
   <li>JavaScript</li>
 </ul>
 
-<h1>Funcionalidades</h1>
+## Funcionalidades
 
 <ul>
   <li><b>Adicionar Tarefas:</b> O usuário pode adicionar o nome da tarefa, o horário e a data.</li>
